@@ -1,9 +1,17 @@
+
+// Optional OpenAI integration - only used if OPENAI_API_KEY is provided
 import OpenAI from "openai";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Only create the client if the API key exists
+const openai = process.env.OPENAI_API_KEY 
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY }) 
+  : null;
 
 export async function summarizeText(text: string): Promise<string> {
+  if (!openai) {
+    throw new Error("OpenAI API key not configured");
+  }
+  
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
@@ -19,6 +27,10 @@ export async function summarizeText(text: string): Promise<string> {
 }
 
 export async function correctGrammar(text: string): Promise<string> {
+  if (!openai) {
+    throw new Error("OpenAI API key not configured");
+  }
+  
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
@@ -34,6 +46,10 @@ export async function correctGrammar(text: string): Promise<string> {
 }
 
 export async function paraphraseText(text: string): Promise<string> {
+  if (!openai) {
+    throw new Error("OpenAI API key not configured");
+  }
+  
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [

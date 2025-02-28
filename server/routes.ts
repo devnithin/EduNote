@@ -122,18 +122,23 @@ router.post("/api/ai/process", isAuthenticated, async (req, res) => {
     let result;
 
     if (model === "openai") {
-      switch (type) {
-        case "summarize":
-          result = await summarizeTextOpenAI(text);
-          break;
-        case "grammar":
-          result = await correctGrammarOpenAI(text);
-          break;
-        case "paraphrase":
-          result = await paraphraseTextOpenAI(text);
-          break;
-        default:
-          return res.status(400).json({ error: "Invalid type" });
+      try {
+        switch (type) {
+          case "summarize":
+            result = await summarizeTextOpenAI(text);
+            break;
+          case "grammar":
+            result = await correctGrammarOpenAI(text);
+            break;
+          case "paraphrase":
+            result = await paraphraseTextOpenAI(text);
+            break;
+          default:
+            return res.status(400).json({ error: "Invalid type" });
+        }
+      } catch (error) {
+        console.error("OpenAI processing error:", error);
+        return res.status(500).json({ error: "OpenAI API key not configured. Using Gemini API instead." });
       }
     } else {
       switch (type) {
