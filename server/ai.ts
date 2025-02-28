@@ -4,7 +4,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function summarizeText(text: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = "Summarize the following text concisely while maintaining key points. Return only the summary:\n\n" + text;
 
@@ -25,7 +25,7 @@ export async function summarizeText(text: string): Promise<string> {
 
 export async function correctGrammar(text: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = "Correct any grammar errors in the following text. Return only the corrected text:\n\n" + text;
 
@@ -46,7 +46,7 @@ export async function correctGrammar(text: string): Promise<string> {
 
 export async function paraphraseText(text: string): Promise<string> {
   try {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = "Rewrite the following text in a different way while maintaining the same meaning. Return only the paraphrased text:\n\n" + text;
 
