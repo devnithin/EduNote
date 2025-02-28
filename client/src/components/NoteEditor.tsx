@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Bold, Italic, List, ListOrdered } from "lucide-react";
+import AIControls from "@/components/AIControls";
 import type { Note } from "@shared/schema";
 
 interface NoteEditorProps {
@@ -19,7 +20,8 @@ export default function NoteEditor({ note, onSave }: NoteEditorProps) {
     content: note?.content || "",
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base lg:prose-lg mx-auto focus:outline-none",
+        class: "prose prose-sm sm:prose-base lg:prose-lg mx-auto focus:outline-none min-h-[200px] p-4 border rounded-lg",
+        placeholder: "Start writing your note here...",
       },
     },
   });
@@ -33,16 +35,23 @@ export default function NoteEditor({ note, onSave }: NoteEditorProps) {
     }
   };
 
+  const handleAIUpdate = (content: string) => {
+    if (editor) {
+      editor.commands.setContent(content);
+    }
+  };
+
   return (
     <Card className="w-full">
-      <CardContent className="p-4">
+      <CardContent className="p-4 space-y-4">
         <Input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="Note title"
-          className="mb-4 text-xl font-bold"
+          placeholder="Enter note title..."
+          className="text-xl font-bold"
         />
-        <div className="border rounded-lg p-1 mb-4 flex gap-1">
+
+        <div className="border rounded-lg p-1 flex gap-1">
           <Button
             variant="ghost"
             size="sm"
@@ -72,8 +81,20 @@ export default function NoteEditor({ note, onSave }: NoteEditorProps) {
             <ListOrdered className="h-4 w-4" />
           </Button>
         </div>
-        <EditorContent editor={editor} className="min-h-[200px]" />
-        <div className="mt-4 flex justify-end">
+
+        <div className="relative">
+          <div className="absolute right-0 -top-10">
+            <AIControls
+              content={editor?.getHTML() || ""}
+              onUpdate={handleAIUpdate}
+            />
+          </div>
+          <div className="border rounded-lg p-4 bg-background hover:border-primary transition-colors cursor-text">
+            <EditorContent editor={editor} />
+          </div>
+        </div>
+
+        <div className="flex justify-end">
           <Button onClick={handleSave}>Save Note</Button>
         </div>
       </CardContent>

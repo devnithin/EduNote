@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Wand2, ArrowLeftRight } from "lucide-react"; //Grammar import removed
+import { Wand2, ArrowLeftRight, Loader2 } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -15,6 +14,15 @@ export default function AIControls({ content, onUpdate }: AIControlsProps) {
   const { toast } = useToast();
 
   const processText = async (endpoint: string) => {
+    if (!content.trim()) {
+      toast({
+        title: "No content",
+        description: "Please write some text first",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     try {
       const res = await apiRequest("POST", `/api/ai/${endpoint}`, { text: content });
@@ -36,31 +44,46 @@ export default function AIControls({ content, onUpdate }: AIControlsProps) {
   };
 
   return (
-    <Card className="p-4 flex gap-2">
+    <div className="flex gap-2">
       <Button
         variant="outline"
+        size="sm"
         onClick={() => processText("summarize")}
         disabled={isLoading}
       >
-        <Wand2 className="w-4 h-4 mr-2" />
-        Summarize
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Wand2 className="h-4 w-4" />
+        )}
+        <span className="ml-2">Summarize</span>
       </Button>
       <Button
         variant="outline"
+        size="sm"
         onClick={() => processText("grammar")}
         disabled={isLoading}
       >
-        <Wand2 className="w-4 h-4 mr-2" /> {/*Grammar icon replaced with Wand2*/}
-        Fix Grammar
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <Wand2 className="h-4 w-4" />
+        )}
+        <span className="ml-2">Fix Grammar</span>
       </Button>
       <Button
         variant="outline"
+        size="sm"
         onClick={() => processText("paraphrase")}
         disabled={isLoading}
       >
-        <ArrowLeftRight className="w-4 h-4 mr-2" />
-        Paraphrase
+        {isLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <ArrowLeftRight className="h-4 w-4" />
+        )}
+        <span className="ml-2">Paraphrase</span>
       </Button>
-    </Card>
+    </div>
   );
 }
