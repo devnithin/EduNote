@@ -25,7 +25,7 @@ import { Loader2 } from "lucide-react";
 
 export default function AuthPage() {
   const { user, loginMutation, registerMutation } = useAuth();
-  
+
   const loginForm = useForm({
     defaultValues: {
       username: "",
@@ -47,11 +47,11 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex bg-gray-100"> {/* Added background color */}
       <div className="flex-1 flex items-center justify-center p-8">
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Welcome to Smart Notes</CardTitle>
+        <Card className="w-full max-w-md bg-white shadow-md rounded-lg"> {/* Added shadow and rounded corners */}
+          <CardHeader className="bg-blue-500 text-white"> {/* Added header color */}
+            <CardTitle>Welcome to EduNote</CardTitle> {/* Changed title */}
             <CardDescription>
               Sign in to your account or create a new one
             </CardDescription>
@@ -62,7 +62,7 @@ export default function AuthPage() {
                 <TabsTrigger value="login">Login</TabsTrigger>
                 <TabsTrigger value="register">Register</TabsTrigger>
               </TabsList>
-              
+
               <TabsContent value="login">
                 <Form {...loginForm}>
                   <form
@@ -99,7 +99,7 @@ export default function AuthPage() {
                     />
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" {/* Added button styling */}
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending && (
@@ -147,7 +147,7 @@ export default function AuthPage() {
                     />
                     <Button
                       type="submit"
-                      className="w-full"
+                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" {/* Added button styling */}
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending && (
@@ -162,12 +162,12 @@ export default function AuthPage() {
           </CardContent>
         </Card>
       </div>
-      <div className="hidden lg:flex flex-1 bg-muted items-center justify-center p-12">
+      <div className="hidden lg:flex flex-1 bg-blue-100 items-center justify-center p-12"> {/* Changed background color */}
         <div className="max-w-lg">
-          <h2 className="text-3xl font-bold mb-4">
+          <h2 className="text-3xl font-bold mb-4 text-blue-700"> {/* Changed text color */}
             AI-Powered Note Taking
           </h2>
-          <p className="text-muted-foreground text-lg">
+          <p className="text-gray-700 text-lg"> {/* Changed text color */}
             Create, edit, and manage your notes with the power of AI. Get instant summaries,
             grammar corrections, and paraphrasing suggestions to enhance your writing.
           </p>
