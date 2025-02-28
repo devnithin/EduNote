@@ -44,45 +44,48 @@ export default function AIControls({ content, onUpdate }: AIControlsProps) {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 bg-muted p-1 rounded-lg">
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => processText("summarize")}
         disabled={isLoading}
+        className="flex items-center gap-2 min-w-[100px]"
       >
         {isLoading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <Wand2 className="h-4 w-4" />
         )}
-        <span className="ml-2">Summarize</span>
+        Summarize
       </Button>
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => processText("grammar")}
         disabled={isLoading}
+        className="flex items-center gap-2 min-w-[100px]"
       >
         {isLoading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <Wand2 className="h-4 w-4" />
         )}
-        <span className="ml-2">Fix Grammar</span>
+        Grammar
       </Button>
       <Button
-        variant="outline"
+        variant="ghost"
         size="sm"
         onClick={() => processText("paraphrase")}
         disabled={isLoading}
+        className="flex items-center gap-2 min-w-[100px]"
       >
         {isLoading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
           <ArrowLeftRight className="h-4 w-4" />
         )}
-        <span className="ml-2">Paraphrase</span>
+        Rephrase
       </Button>
     </div>
   );
