@@ -1,3 +1,4 @@
+
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
@@ -44,8 +45,6 @@ export async function correctGrammar(text: string): Promise<string> {
   }
 }
 
-export async function paraphraseText(text: string): Promise<string> {
-
 export async function chat(message: string): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
@@ -65,6 +64,7 @@ export async function chat(message: string): Promise<string> {
   }
 }
 
+export async function paraphraseText(text: string): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 

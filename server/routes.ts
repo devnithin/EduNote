@@ -167,21 +167,8 @@ router.post("/api/ai/chat", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    // Use OpenAI by default for chat functionality
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: "You are a helpful assistant that provides concise, accurate answers. You're part of an educational note-taking application."
-        },
-        { role: "user", content: message }
-      ],
-    });
-
-    const aiResponse = response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
-
+    // Use Gemini for chat functionality
+    const aiResponse = await chat(message);
     res.json({ response: aiResponse });
   } catch (error) {
     console.error("Chat error:", error);
