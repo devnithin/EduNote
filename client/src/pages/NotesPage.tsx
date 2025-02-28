@@ -7,6 +7,8 @@ import { queryClient, apiRequest } from "@/lib/queryClient";
 import NoteEditor from "@/components/NoteEditor";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
+import { Logo } from "@/components/Logo"; // Added Logo import
+
 
 export default function NotesPage() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(null);
@@ -89,7 +91,10 @@ export default function NotesPage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
-          <h1 className="text-xl font-bold">Smart Notes</h1>
+          <div className="flex items-center gap-4"> {/* Added container for logo and title */}
+            <Logo /> {/* Placeholder for logo */}
+            <h1 className="text-xl font-bold">EduNote</h1> {/* Renamed to EduNote */}
+          </div>
         </div>
         <Button
           variant="ghost"

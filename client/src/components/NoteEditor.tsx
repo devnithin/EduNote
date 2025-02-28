@@ -20,7 +20,7 @@ export default function NoteEditor({ note, onSave }: NoteEditorProps) {
     content: note?.content || "",
     editorProps: {
       attributes: {
-        class: "prose prose-sm sm:prose-base lg:prose-lg prose-primary focus:outline-none min-h-[200px] p-6",
+        class: "prose prose-sm sm:prose-base lg:prose-lg prose-primary focus:outline-none min-h-[200px] p-6 note-editor", //Added note-editor class here as requested.
       },
     },
   });
