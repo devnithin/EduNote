@@ -163,7 +163,7 @@ router.post("/api/ai/process", isAuthenticated, async (req, res) => {
   }
 });
 
-// NEW: AI Chat endpoint
+// AI Chat endpoint
 router.post("/api/ai/chat", async (req, res) => {
   try {
     const { message } = req.body;
@@ -172,12 +172,16 @@ router.post("/api/ai/chat", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
+    console.log("Chat request:", message);
+    
     // Use Gemini for chat functionality
     const aiResponse = await chat(message);
+    console.log("Chat response received");
+    
     res.json({ response: aiResponse });
   } catch (error) {
     console.error("Chat error:", error);
-    res.status(500).json({ error: "Failed to process chat message" });
+    res.status(500).json({ error: `Chat error: ${error.message}` });
   }
 });
 
