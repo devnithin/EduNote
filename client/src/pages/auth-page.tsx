@@ -99,7 +99,7 @@ export default function AuthPage() {
                     />
                     <Button
                       type="submit"
-                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" {/* Added button styling */}
+                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" /* Added button styling */
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending && (
@@ -147,7 +147,7 @@ export default function AuthPage() {
                     />
                     <Button
                       type="submit"
-                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" {/* Added button styling */}
+                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" /* Added button styling */
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending && (
