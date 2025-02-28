@@ -47,19 +47,27 @@ export async function correctGrammar(text: string): Promise<string> {
 export async function chat(message: string): Promise<string> {
   try {
     if (!process.env.GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY environment variable is not set");
       throw new Error("GEMINI_API_KEY not configured");
     }
 
+    console.log("Using Gemini API with key:", process.env.GEMINI_API_KEY.substring(0, 5) + "...");
+    
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
+    console.log("Sending message to Gemini API:", message);
     const result = await model.generateContent(message);
     const response = await result.response;
+    console.log("Received response from Gemini API");
 
-    if (response && response.text) {
-      return response.text();
+    if (response && typeof response.text === 'function') {
+      const responseText = response.text();
+      console.log("Successfully processed response text");
+      return responseText;
     } else {
-      throw new Error("Empty response from Gemini API");
+      console.error("Invalid response format:", response);
+      throw new Error("Empty or invalid response from Gemini API");
     }
   } catch (error) {
     console.error("Error in chat function:", error);

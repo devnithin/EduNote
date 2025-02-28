@@ -172,16 +172,26 @@ router.post("/api/ai/chat", async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    console.log("Chat request:", message);
+    console.log("Chat request received:", message);
+    
+    if (!process.env.GEMINI_API_KEY) {
+      console.error("GEMINI_API_KEY is not set");
+      return res.status(500).json({ 
+        error: "GEMINI_API_KEY not configured. Please set up the API key in the Secrets tab." 
+      });
+    }
     
     // Use Gemini for chat functionality
     const aiResponse = await chat(message);
-    console.log("Chat response received");
+    console.log("Chat response successfully received and processed");
     
     res.json({ response: aiResponse });
   } catch (error) {
     console.error("Chat error:", error);
-    res.status(500).json({ error: `Chat error: ${error.message}` });
+    res.status(500).json({ 
+      error: `Chat error: ${error.message}`,
+      details: "Please make sure GEMINI_API_KEY is properly configured in your environment variables."
+    });
   }
 });
 
