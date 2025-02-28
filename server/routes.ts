@@ -100,3 +100,110 @@ export async function registerRoutes(app: Express): Promise<Server> {
   const httpServer = createServer(app);
   return httpServer;
 }
+import { Router } from "express";
+import { db } from "./db";
+import { notes, users } from "./schema";
+import { eq } from "drizzle-orm";
+import { authenticateToken } from "./auth";
+import { summarizeText, correctGrammar, paraphraseText } from "./ai";
+import { summarizeText as summarizeTextOpenAI, correctGrammar as correctGrammarOpenAI, paraphraseText as paraphraseTextOpenAI } from "./openai";
+import OpenAI from "openai";
+
+export const router = Router();
+
+// Text processing routes
+router.post("/api/ai/process", authenticateToken, async (req, res) => {
+  try {
+    const { text, type, model } = req.body;
+    
+    if (!text || !type) {
+      return res.status(400).json({ error: "Text and type are required" });
+    }
+    
+    let result;
+    
+    if (model === "openai") {
+      switch (type) {
+        case "summarize":
+          result = await summarizeTextOpenAI(text);
+          break;
+        case "grammar":
+          result = await correctGrammarOpenAI(text);
+          break;
+        case "paraphrase":
+          result = await paraphraseTextOpenAI(text);
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid type" });
+      }
+    } else {
+      switch (type) {
+        case "summarize":
+          result = await summarizeText(text);
+          break;
+        case "grammar":
+          result = await correctGrammar(text);
+          break;
+        case "paraphrase":
+          result = await paraphraseText(text);
+          break;
+        default:
+          return res.status(400).json({ error: "Invalid type" });
+      }
+    }
+    
+    res.json({ result });
+  } catch (error) {
+    console.error("Processing error:", error);
+    res.status(500).json({ error: "Failed to process text" });
+  }
+});
+
+// NEW: AI Chat endpoint
+router.post("/api/ai/chat", async (req, res) => {
+  try {
+    const { message } = req.body;
+    
+    if (!message) {
+      return res.status(400).json({ error: "Message is required" });
+    }
+    
+    // Use OpenAI by default for chat functionality
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant that provides concise, accurate answers. You're part of an educational note-taking application."
+        },
+        { role: "user", content: message }
+      ],
+    });
+    
+    const aiResponse = response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
+    
+    res.json({ response: aiResponse });
+  } catch (error) {
+    console.error("Chat error:", error);
+    res.status(500).json({ error: "Failed to process chat message" });
+  }
+});
+
+// Notes routes
+router.get("/api/notes", authenticateToken, async (req, res) => {
+  try {
+    const userNotes = await db
+      .select()
+      .from(notes)
+      .where(eq(notes.userId, req.user.id))
+      .orderBy(notes.updatedAt);
+
+    res.json(userNotes);
+  } catch (error) {
+    console.error("Error fetching notes:", error);
+    res.status(500).json({ error: "Failed to fetch notes" });
+  }
+});
+
+// More routes...
