@@ -91,9 +91,8 @@ export default function NotesPage() {
               <ArrowLeft className="h-5 w-5" />
             </Button>
           )}
-          <div className="flex items-center gap-4"> {/* Added container for logo and title */}
-            <Logo /> {/* Placeholder for logo */}
-            <h1 className="text-xl font-bold">EduNote</h1> {/* Renamed to EduNote */}
+          <div className="flex items-center gap-4">
+            <Logo />
           </div>
         </div>
         <Button
