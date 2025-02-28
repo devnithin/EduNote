@@ -102,7 +102,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 }
 import { Router } from "express";
 import { db } from "./db";
-import { notes, users } from "./schema";
+import { notes, users } from "../shared/schema";
 import { eq } from "drizzle-orm";
 import { authenticateToken } from "./auth";
 import { summarizeText, correctGrammar, paraphraseText } from "./ai";
