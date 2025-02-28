@@ -53,6 +53,7 @@ export function setupAuth(app: Express) {
         }
         return done(null, user);
       } catch (err) {
+        console.error("Login error:", err);
         return done(err);
       }
     }),
@@ -67,29 +68,40 @@ export function setupAuth(app: Express) {
       const user = await storage.getUser(id);
       done(null, user);
     } catch (err) {
+      console.error("Deserialize error:", err);
       done(err);
     }
   });
 
   app.post("/api/register", async (req: Request, res: Response) => {
     try {
+      console.log("Registration attempt:", { username: req.body.username });
+
       const existingUser = await storage.getUserByUsername(req.body.username);
       if (existingUser) {
+        console.log("Registration failed: Username exists");
         return res.status(400).json({ message: "Username already exists" });
       }
 
       const hashedPassword = await hashPassword(req.body.password);
+      console.log("Password hashed successfully");
+
       const user = await storage.createUser({
         username: req.body.username,
         password: hashedPassword,
       });
+      console.log("User created successfully:", { id: user.id });
 
       req.login(user, (err) => {
-        if (err) throw err;
+        if (err) {
+          console.error("Login after registration failed:", err);
+          throw err;
+        }
         res.json(user);
       });
     } catch (error) {
-      res.status(500).json({ message: "Failed to register" });
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Failed to register", error: error.message });
     }
   });
 
