@@ -45,6 +45,26 @@ export async function correctGrammar(text: string): Promise<string> {
 }
 
 export async function paraphraseText(text: string): Promise<string> {
+
+export async function chat(message: string): Promise<string> {
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+    const result = await model.generateContent(message);
+    const response = await result.response;
+    const responseText = response.text();
+
+    if (!responseText) {
+      throw new Error("Empty response from Gemini API");
+    }
+
+    return responseText;
+  } catch (error) {
+    console.error("Chat error:", error);
+    throw new Error("Failed to process chat message");
+  }
+}
+
   try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 

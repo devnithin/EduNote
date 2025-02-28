@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertNoteSchema } from "@shared/schema";
-import { summarizeText, correctGrammar, paraphraseText } from "./ai";
+import { summarizeText, correctGrammar, paraphraseText, chat } from "./ai";
 import { setupAuth } from "./auth";
 
 function isAuthenticated(req: any, res: any, next: any) {
@@ -104,7 +104,7 @@ import { Router } from "express";
 import { db } from "./db";
 import { notes, users } from "../shared/schema";
 import { eq } from "drizzle-orm";
-import { summarizeText, correctGrammar, paraphraseText } from "./ai";
+import { summarizeText, correctGrammar, paraphraseText, chat } from "./ai";
 import { summarizeText as summarizeTextOpenAI, correctGrammar as correctGrammarOpenAI, paraphraseText as paraphraseTextOpenAI } from "./openai";
 import OpenAI from "openai";
 
@@ -114,13 +114,13 @@ export const router = Router();
 router.post("/api/ai/process", isAuthenticated, async (req, res) => {
   try {
     const { text, type, model } = req.body;
-    
+
     if (!text || !type) {
       return res.status(400).json({ error: "Text and type are required" });
     }
-    
+
     let result;
-    
+
     if (model === "openai") {
       switch (type) {
         case "summarize":
@@ -150,7 +150,7 @@ router.post("/api/ai/process", isAuthenticated, async (req, res) => {
           return res.status(400).json({ error: "Invalid type" });
       }
     }
-    
+
     res.json({ result });
   } catch (error) {
     console.error("Processing error:", error);
@@ -162,11 +162,11 @@ router.post("/api/ai/process", isAuthenticated, async (req, res) => {
 router.post("/api/ai/chat", async (req, res) => {
   try {
     const { message } = req.body;
-    
+
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
-    
+
     // Use OpenAI by default for chat functionality
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
     const response = await openai.chat.completions.create({
@@ -179,9 +179,9 @@ router.post("/api/ai/chat", async (req, res) => {
         { role: "user", content: message }
       ],
     });
-    
+
     const aiResponse = response.choices[0]?.message?.content || "I'm sorry, I couldn't generate a response.";
-    
+
     res.json({ response: aiResponse });
   } catch (error) {
     console.error("Chat error:", error);
