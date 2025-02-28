@@ -3,43 +3,62 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertNoteSchema } from "@shared/schema";
 import { summarizeText, correctGrammar, paraphraseText } from "./ai";
+import { setupAuth } from "./auth";
+
+function isAuthenticated(req: any, res: any, next: any) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.status(401).json({ message: "Not authenticated" });
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Notes CRUD
-  app.get("/api/notes", async (_req, res) => {
-    const notes = await storage.getNotes();
+  // Set up authentication routes
+  setupAuth(app);
+
+  // Protected Notes CRUD routes
+  app.get("/api/notes", isAuthenticated, async (req, res) => {
+    const notes = await storage.getNotes(req.user!.id);
     res.json(notes);
   });
 
-  app.post("/api/notes", async (req, res) => {
+  app.post("/api/notes", isAuthenticated, async (req, res) => {
     const result = insertNoteSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ error: "Invalid note data" });
     }
-    const note = await storage.createNote(result.data);
+    const note = await storage.createNote(req.user!.id, result.data);
     res.json(note);
   });
 
-  app.put("/api/notes/:id", async (req, res) => {
+  app.put("/api/notes/:id", isAuthenticated, async (req, res) => {
     const result = insertNoteSchema.safeParse(req.body);
     if (!result.success) {
       return res.status(400).json({ error: "Invalid note data" });
     }
     try {
-      const note = await storage.updateNote(Number(req.params.id), result.data);
-      res.json(note);
+      const note = await storage.getNote(Number(req.params.id));
+      if (!note || note.userId !== req.user!.id) {
+        return res.status(404).json({ error: "Note not found" });
+      }
+      const updatedNote = await storage.updateNote(Number(req.params.id), result.data);
+      res.json(updatedNote);
     } catch (error) {
       res.status(404).json({ error: "Note not found" });
     }
   });
 
-  app.delete("/api/notes/:id", async (req, res) => {
+  app.delete("/api/notes/:id", isAuthenticated, async (req, res) => {
+    const note = await storage.getNote(Number(req.params.id));
+    if (!note || note.userId !== req.user!.id) {
+      return res.status(404).json({ error: "Note not found" });
+    }
     await storage.deleteNote(Number(req.params.id));
     res.status(204).end();
   });
 
-  // AI Routes
-  app.post("/api/ai/summarize", async (req, res) => {
+  // Protected AI routes
+  app.post("/api/ai/summarize", isAuthenticated, async (req, res) => {
     try {
       const { text } = req.body;
       if (!text) {
@@ -52,7 +71,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ai/grammar", async (req, res) => {
+  app.post("/api/ai/grammar", isAuthenticated, async (req, res) => {
     try {
       const { text } = req.body;
       if (!text) {
@@ -65,7 +84,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post("/api/ai/paraphrase", async (req, res) => {
+  app.post("/api/ai/paraphrase", isAuthenticated, async (req, res) => {
     try {
       const { text } = req.body;
       if (!text) {
