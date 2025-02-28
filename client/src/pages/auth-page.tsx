@@ -47,11 +47,11 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gray-100"> {/* Added background color */}
+    <div className="min-h-screen flex">
       <div className="flex-1 flex items-center justify-center p-8">
-        <Card className="w-full max-w-md bg-white shadow-md rounded-lg"> {/* Added shadow and rounded corners */}
-          <CardHeader className="bg-blue-500 text-white"> {/* Added header color */}
-            <CardTitle>Welcome to EduNote</CardTitle> {/* Changed title */}
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Welcome</CardTitle>
             <CardDescription>
               Sign in to your account or create a new one
             </CardDescription>
@@ -99,7 +99,7 @@ export default function AuthPage() {
                     />
                     <Button
                       type="submit"
-                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" /* Added button styling */
+                      className="w-full"
                       disabled={loginMutation.isPending}
                     >
                       {loginMutation.isPending && (
@@ -147,7 +147,7 @@ export default function AuthPage() {
                     />
                     <Button
                       type="submit"
-                      className="w-full bg-blue-500 hover:bg-blue-700 text-white" /* Added button styling */
+                      className="w-full"
                       disabled={registerMutation.isPending}
                     >
                       {registerMutation.isPending && (
