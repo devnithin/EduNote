@@ -104,7 +104,6 @@ import { Router } from "express";
 import { db } from "./db";
 import { notes, users } from "../shared/schema";
 import { eq } from "drizzle-orm";
-import { authenticateToken } from "./auth";
 import { summarizeText, correctGrammar, paraphraseText } from "./ai";
 import { summarizeText as summarizeTextOpenAI, correctGrammar as correctGrammarOpenAI, paraphraseText as paraphraseTextOpenAI } from "./openai";
 import OpenAI from "openai";
@@ -112,7 +111,7 @@ import OpenAI from "openai";
 export const router = Router();
 
 // Text processing routes
-router.post("/api/ai/process", authenticateToken, async (req, res) => {
+router.post("/api/ai/process", isAuthenticated, async (req, res) => {
   try {
     const { text, type, model } = req.body;
     
@@ -191,7 +190,7 @@ router.post("/api/ai/chat", async (req, res) => {
 });
 
 // Notes routes
-router.get("/api/notes", authenticateToken, async (req, res) => {
+router.get("/api/notes", isAuthenticated, async (req, res) => {
   try {
     const userNotes = await db
       .select()
