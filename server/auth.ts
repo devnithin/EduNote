@@ -102,7 +102,7 @@ export function setupAuth(app: Express) {
       });
     } catch (error) {
       console.error("Registration error:", error);
-      res.status(500).json({ message: "Failed to register", error: error.message });
+      res.status(500).json({ message: "Failed to register", error: error instanceof Error ? error.message : 'Unknown error' });
     }
   });
 

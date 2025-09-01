@@ -61,10 +61,9 @@ app.use((req, res, next) => {
   server.listen({
     port,
     host: "0.0.0.0",
-    reusePort: true,
   }, () => {
     log(`serving on port ${port}`);
-  }).on('error', (err) => {
+  }).on('error', (err: NodeJS.ErrnoException) => {
     if (err.code === 'EADDRINUSE') {
       log(`Port ${port} is busy, trying to find an available port...`);
       // Try with port 0 to auto-assign an available port

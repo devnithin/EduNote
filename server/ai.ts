@@ -71,7 +71,7 @@ export async function chat(message: string): Promise<string> {
     }
   } catch (error) {
     console.error("Error in chat function:", error);
-    throw new Error(`Failed to process chat message: ${error.message}`);
+    throw new Error(`Failed to process chat message: ${error instanceof Error ? error.message : 'Unknown error'}`);
   }
 }
 

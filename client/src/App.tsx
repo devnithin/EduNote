@@ -7,7 +7,6 @@ import NotesPage from "@/pages/NotesPage";
 import AuthPage from "@/pages/auth-page";
 import { AuthProvider } from "@/hooks/use-auth";
 import { ProtectedRoute } from "@/lib/protected-route";
-import { AIChatbot } from "@/components/AIChatbot"; // Added import
 
 
 function Router() {
@@ -26,7 +25,6 @@ function App() {
       <AuthProvider>
         <Router />
         <Toaster />
-        <AIChatbot /> {/* Added AIChatbot component */}
       </AuthProvider>
     </QueryClientProvider>
   );

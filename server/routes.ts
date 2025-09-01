@@ -97,118 +97,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // AI Chat endpoint
+  app.post("/api/ai/chat", async (req, res) => {
+    try {
+      const { message } = req.body;
+
+      if (!message) {
+        return res.status(400).json({ error: "Message is required" });
+      }
+
+      console.log("Chat request received:", message);
+      
+      if (!process.env.GEMINI_API_KEY) {
+        console.error("GEMINI_API_KEY is not set");
+        return res.status(500).json({ 
+          error: "GEMINI_API_KEY not configured. Please set up the API key in the Secrets tab." 
+        });
+      }
+      
+      // Use Gemini for chat functionality
+      const aiResponse = await chat(message);
+      console.log("Chat response successfully received and processed");
+      
+      res.json({ response: aiResponse });
+    } catch (error) {
+      console.error("Chat error:", error);
+      res.status(500).json({ 
+        error: `Chat error: ${(error as Error).message}`,
+        details: "Please make sure GEMINI_API_KEY is properly configured in your environment variables."
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
-import { Router } from "express";
-import { db } from "./db";
-import { notes, users } from "../shared/schema";
-import { eq } from "drizzle-orm";
-import { summarizeText, correctGrammar, paraphraseText, chat } from "./ai";
-import { summarizeText as summarizeTextOpenAI, correctGrammar as correctGrammarOpenAI, paraphraseText as paraphraseTextOpenAI } from "./openai";
-import OpenAI from "openai";
-
-export const router = Router();
-
-// Text processing routes
-router.post("/api/ai/process", isAuthenticated, async (req, res) => {
-  try {
-    const { text, type, model } = req.body;
-
-    if (!text || !type) {
-      return res.status(400).json({ error: "Text and type are required" });
-    }
-
-    let result;
-
-    if (model === "openai") {
-      try {
-        switch (type) {
-          case "summarize":
-            result = await summarizeTextOpenAI(text);
-            break;
-          case "grammar":
-            result = await correctGrammarOpenAI(text);
-            break;
-          case "paraphrase":
-            result = await paraphraseTextOpenAI(text);
-            break;
-          default:
-            return res.status(400).json({ error: "Invalid type" });
-        }
-      } catch (error) {
-        console.error("OpenAI processing error:", error);
-        return res.status(500).json({ error: "OpenAI API key not configured. Using Gemini API instead." });
-      }
-    } else {
-      switch (type) {
-        case "summarize":
-          result = await summarizeText(text);
-          break;
-        case "grammar":
-          result = await correctGrammar(text);
-          break;
-        case "paraphrase":
-          result = await paraphraseText(text);
-          break;
-        default:
-          return res.status(400).json({ error: "Invalid type" });
-      }
-    }
-
-    res.json({ result });
-  } catch (error) {
-    console.error("Processing error:", error);
-    res.status(500).json({ error: "Failed to process text" });
-  }
-});
-
-// AI Chat endpoint
-router.post("/api/ai/chat", async (req, res) => {
-  try {
-    const { message } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ error: "Message is required" });
-    }
-
-    console.log("Chat request received:", message);
-    
-    if (!process.env.GEMINI_API_KEY) {
-      console.error("GEMINI_API_KEY is not set");
-      return res.status(500).json({ 
-        error: "GEMINI_API_KEY not configured. Please set up the API key in the Secrets tab." 
-      });
-    }
-    
-    // Use Gemini for chat functionality
-    const aiResponse = await chat(message);
-    console.log("Chat response successfully received and processed");
-    
-    res.json({ response: aiResponse });
-  } catch (error) {
-    console.error("Chat error:", error);
-    res.status(500).json({ 
-      error: `Chat error: ${error.message}`,
-      details: "Please make sure GEMINI_API_KEY is properly configured in your environment variables."
-    });
-  }
-});
-
-// Notes routes
-router.get("/api/notes", isAuthenticated, async (req, res) => {
-  try {
-    const userNotes = await db
-      .select()
-      .from(notes)
-      .where(eq(notes.userId, req.user.id))
-      .orderBy(notes.updatedAt);
-
-    res.json(userNotes);
-  } catch (error) {
-    console.error("Error fetching notes:", error);
-    res.status(500).json({ error: "Failed to fetch notes" });
-  }
-});
-
-// More routes...
