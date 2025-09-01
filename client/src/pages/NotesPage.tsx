@@ -8,6 +8,7 @@ import NoteEditor from "@/components/NoteEditor";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { Logo } from "@/components/Logo"; // Added Logo import
+import { ThemeToggle } from "@/components/theme-toggle";
 
 
 export default function NotesPage() {
@@ -95,15 +96,18 @@ export default function NotesPage() {
             <Logo />
           </div>
         </div>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => logoutMutation.mutate()}
-          className="flex items-center gap-1"
-        >
-          <LogOut className="h-4 w-4" />
-          Logout
-        </Button>
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => logoutMutation.mutate()}
+            className="flex items-center gap-1"
+          >
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
+        </div>
       </header>
       <div className="flex flex-1 overflow-hidden">
         <div className="flex-1 p-4">
